@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Screen Sharing</title>
+  </head>
+  <body>
+    <h1>Screen Sharing</h1>
+    <canvas id="canvas"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      navigator.mediaDevices
+        .getDisplayMedia({ video: true })
+        .then(stream => {
+          const canvas = document.getElementById('canvas');
+          const context = canvas.getContext('2d');
+
+          const video = document.createElement('video');
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            video.play();
+            setInterval(() => {
+              context.drawImage(video, 0, 0, canvas.width, canvas.height);
+              const imageData = canvas.toDataURL('image/png');
+              socket.emit('stream', imageData);
+            }, 100);
+          };
+        })
+        .catch(error => {
+          console.error('Error accessing screen:', error);
+        });
+
+      socket.on('stream', image => {
+        const img = document.createElement('img');
+        img.src = image;
+      });
+    </script>
+  </body>
+</html>
