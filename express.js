@@ -23,11 +23,11 @@ io.on('connection', socket => {
 
   socket.on('stream', image => {
     io.emit(socket.id, image, socket.id);
-    console.log("Image received")
+    console.log("Image received ",socket.id)
   });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('A user disconnected', socket.id);
   });
 });
 
