@@ -9,7 +9,7 @@ import base64
 sio = socketio.Client()
 
 # Connect to the server
-sio.connect('http://localhost:3080')  # Replace with your server address
+sio.connect('http://localhost:3040')  # Replace with your server address
 
 # Get screen resolution
 screen_width, screen_height = pyautogui.size()
@@ -26,8 +26,8 @@ video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_size[1])
 
 
 @sio.event
-def connect():
-    print('Connected to server')
+def connect(sid, environ):
+    print('Connected to server'+sid)
 
 
 @sio.event
@@ -37,6 +37,7 @@ def disconnect():
 
 # Function to emit the screen sharing stream
 def emit_screen_share():
+    print(sio.get_sid())
     while True:
         # Capture the screen frame
         # ret, frame = video_capture.read()
@@ -54,6 +55,7 @@ def emit_screen_share():
         base64_data = base64.b64encode(data).decode('utf-8')
 
         # Emit the base64-encoded frame as an event to the server
+        # sio.
         sio.emit('stream', base64_data)  # Emitting the base64 data to 'stream' event
 
 
